@@ -8,9 +8,6 @@
     "url": "https://github.com/bfoese/ngx-preload-fonts.git",
     "directory": "packages/ngx-preload-fonts"
   },
-  "publishConfig": {
-    "registry": "registry=https://registry.npmjs.org/"
-  },
   "scripts": {
     "prepublish": "npm run build",
     "build": "rimraf dist && tsc -p tsconfig.build.json",

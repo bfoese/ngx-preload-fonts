@@ -30,11 +30,9 @@ root of your build output directory and inserts preload links for them into the
 index file of the build. The tool also gives control to omit the preload links
 for a subset of the fonts.
 
-The generated links will have the form of:
-
 ### Limitations of this tool
 
-This tool is laid out to automatically find fonts which are handled by Angular
+This tool is laid out to automatically find fonts, which are handled by Angular
 build system. Specifically, this will include fonts which are referenced by
 **relative paths** in **your stylesheets or stylesheets you imported from
 libraries**.
@@ -50,12 +48,6 @@ to the index file. It does not crawl the subdirectories. If you would like to
 see this feature, give me a feature request. But I assume that when you use
 absolute paths, the URLs are being static anyway (as Angular would not
 fingerprint them) and the preload links could be declared manually.
-
-ngx-preload-fonts is compatible with multi-builds, meaning if Angular builds
-multiple versions for your app at once (e.g. one build per i18n language), you
-provide the root directory of these builds as command argument and
-ngx-preload-fonts will find multiple build roots and updates their index files
-with preload links for the fonts which reside in this specific build root.
 
 ### Background on Angular CSS resource handling and fingerprinting
 
