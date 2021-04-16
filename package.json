@@ -1,0 +1,130 @@
+{
+  "name": "@bfoese/ngx-preload-fonts",
+  "description": "Angular post-build tool to inject font preload links for fingerprinted fonts into the index file.",
+  "version": "1.0.0",
+  "author": "Britt Foese <britt.foese@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bfoese/ngx-preload-fonts.git",
+    "directory": "packages/ngx-preload-fonts"
+  },
+  "publishConfig": {
+    "registry": "registry=https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "prepublish": "npm run build",
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint",
+    "test": "npx jest --coverage --coverageReporters='json-summary' --coverageDirectory='./coverage/'",
+    "make-badges": "istanbul-badges-readme",
+    "release": "standard-version"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^5.1.0",
+    "figlet": "^1.5.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.14.6",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.22.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "husky": "^6.0.0",
+    "istanbul-badges-readme": "^1.2.1",
+    "jest": "^26.6.3",
+    "prettier": "^2.1.2",
+    "rimraf": "^3.0.2",
+    "standard-version": "^9.2.0",
+    "ts-jest": "^26.4.3",
+    "ts-loader": "^8.0.9",
+    "ts-node": "^9.0.0",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.0.5"
+  },
+  "files": [
+    "dist/**/*",
+    "*.md"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "keywords": [
+    "angular",
+    "postbuild",
+    "font",
+    "preload"
+  ],
+  "bin": {
+    "preloadfonts": "dist/index.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm run test && npm run make-badges && git add 'README.md'",
+      "pre-push": "npm run test",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "standard-version": {
+    "types": [
+      {
+        "type": "feat",
+        "section": "Features"
+      },
+      {
+        "type": "fix",
+        "section": "Bug Fixes"
+      },
+      {
+        "type": "chore",
+        "hidden": true
+      },
+      {
+        "type": "ci",
+        "hidden": true
+      },
+      {
+        "type": "build",
+        "hidden": true
+      },
+      {
+        "type": "docs",
+        "hidden": true
+      },
+      {
+        "type": "style",
+        "hidden": true
+      },
+      {
+        "type": "refactor",
+        "hidden": true
+      },
+      {
+        "type": "perf",
+        "hidden": true
+      },
+      {
+        "type": "test",
+        "hidden": true
+      }
+    ],
+    "header": "Changelog",
+    "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/commit/{{hash}}",
+    "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
+    "issueUrlFormat": "{{host}}/{{owner}}/{{repository}}/issues/{{id}}",
+    "userUrlFormat": "{{host}}/{{user}}",
+    "releaseCommitMessageFormat": "chore(release): {{currentTag}}",
+    "issuePrefixes": [
+      "#"
+    ]
+  }
+}
