@@ -41,6 +41,10 @@ program
     '-e, --exclude [exclude]',
     'Optional comma separated list of font names to exclude from the preload link generation. Provide the names without file extension, e.g. "helvetica" instead of "helvetica.woff2"'
   )
+  .option(
+    '--deployUrl [deployUrl]',
+    'Optional path prefix for your deployment allowing to preload in builds using a deploy url'
+  )
   .parse(process.argv);
 
 // console.log('Options: ', program.opts());
@@ -56,6 +60,7 @@ if (!program.dist) {
 
 program.dist = FileUtil.normalizePath(program.dist);
 program.file = program.file ?? 'index.html';
+program.deployUrl = program.deployUrl ?? '';
 
 const appBuildDirs = FileUtil.getAppBuildDirs(program.dist, program.file);
 
@@ -78,7 +83,7 @@ for (const appBuildDir of appBuildDirs) {
   if (fonts && fonts.size > 0) {
     const preloadFontLinks = Array.from(fonts.keys())
       .map(
-        (font) => `<link rel="preload" as="font" href="${font}" type="font/${fonts.get(font)}" crossorigin="anonymous">`
+        (font) => `<link rel="preload" as="font" href="${FileUtil.normalizePath(program.deployUrl + font)}" type="font/${fonts.get(font)}" crossorigin="anonymous">`
       )
       .join('\n');
     const indexFilePath = `${appBuildDir}/${program.file}`;
