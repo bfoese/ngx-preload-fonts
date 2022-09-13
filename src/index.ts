@@ -41,6 +41,11 @@ program
     '-e, --exclude [exclude]',
     'Optional comma separated list of font names to exclude from the preload link generation. Provide the names without file extension, e.g. "helvetica" instead of "helvetica.woff2"'
   )
+  .option(
+    '-p, --prerender-scan',
+    'Search for index files deep into the base directory, so every injection marker will be replaced (Angular Universal Prerender compatibility).',
+    false
+  )
   .parse(process.argv);
 
 // console.log('Options: ', program.opts());
@@ -81,31 +86,39 @@ for (const appBuildDir of appBuildDirs) {
         (font) => `<link rel="preload" as="font" href="${font}" type="font/${fonts.get(font)}" crossorigin="anonymous">`
       )
       .join('\n');
-    const indexFilePath = `${appBuildDir}/${program.file}`;
 
-    const indexFileContent = fs.readFileSync(indexFilePath, 'utf8');
-    const match = indexFileContent.match(regexInjectionMarker);
+    const dirs = [
+      appBuildDir,
+      ...(program.prerenderScan ? FileUtil.findRecursivePrerenderedDirs(appBuildDir, program.file) : []),
+    ];
+    for (let i = 0, len = dirs.length; i < len; i++) {
+      const currentAppBuildDir = dirs[i];
+      const indexFilePath = `${currentAppBuildDir}/${program.file}`;
 
-    if (!match || match.length === 0) {
-      log(
-        chalk.red(
-          `Inserted ${chalk.yellow.underline.bold('0')} preload font links into ${chalk.yellow.underline(
-            indexFilePath
-          )}: Could not detect the injection marker ${chalk.yellow(
-            injectionMarker
-          )}. Did you forget to include the marker or was is already replaced by a previous run?`
-        )
-      );
-    } else {
-      fs.writeFileSync(indexFilePath, indexFileContent.replace(regexInjectionMarker, preloadFontLinks));
+      const indexFileContent = fs.readFileSync(indexFilePath, 'utf8');
+      const match = indexFileContent.match(regexInjectionMarker);
 
-      log(
-        chalk.green(
-          `Inserted ${chalk.yellow.underline.bold(fonts.size)} preload font links into ${chalk.yellow.underline(
-            indexFilePath
-          )}`
-        )
-      );
+      if (!match || match.length === 0) {
+        log(
+          chalk.red(
+            `Inserted ${chalk.yellow.underline.bold('0')} preload font links into ${chalk.yellow.underline(
+              indexFilePath
+            )}: Could not detect the injection marker ${chalk.yellow(
+              injectionMarker
+            )}. Did you forget to include the marker or was is already replaced by a previous run?`
+          )
+        );
+      } else {
+        fs.writeFileSync(indexFilePath, indexFileContent.replace(regexInjectionMarker, preloadFontLinks));
+
+        log(
+          chalk.green(
+            `Inserted ${chalk.yellow.underline.bold(fonts.size)} preload font links into ${chalk.yellow.underline(
+              indexFilePath
+            )}`
+          )
+        );
+      }
     }
   }
 }

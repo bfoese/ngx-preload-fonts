@@ -1,5 +1,5 @@
 import { FileUtil } from './file.util';
-
+import mock from 'mock-fs';
 describe('FileUtil', () => {
   describe('normalizePath', () => {
     it('should convert Unix to Unix format', async () => {
@@ -150,5 +150,38 @@ describe('FileUtil', () => {
       expect(FileUtil.filterFonts(files, undefined, ['']).size).toBe(allFontsCount);
       expect(FileUtil.filterFonts(files, undefined, ['bar']).size).toBe(allFontsCount);
     });
+  });
+
+  describe('findRecursivePrerenderedDirs', () => {
+    beforeEach(function () {
+      mock({
+        base: {
+          'index.html': 'main html content (should not be returned)',
+          'random-empty-dir': {},
+          news: {
+            'news-slug1': {
+              'index.html': 'extra prerender file',
+              foo: 'random content',
+            },
+            'news-slug2': {
+              'index.html': 'extra prerender file',
+            },
+            'index.html': 'extra prerendered folder',
+          },
+        },
+      });
+    });
+
+    it('should extract the index.html within the root app folder', async () => {
+      const prerenderedDirectories = FileUtil.findRecursivePrerenderedDirs('base', 'index.html');
+
+      expect(prerenderedDirectories.length).toBe(3);
+      expect(prerenderedDirectories).not.toContain('base');
+      expect(prerenderedDirectories).toContain('base/news');
+      expect(prerenderedDirectories).toContain('base/news/news-slug1');
+      expect(prerenderedDirectories).toContain('base/news/news-slug2');
+    });
+
+    afterEach(mock.restore);
   });
 });
