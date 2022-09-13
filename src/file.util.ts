@@ -84,6 +84,31 @@ export class FileUtil {
     return match && match.length > 0 ? file.substr(0, file.indexOf(match[0])) : undefined;
   }
 
+  /**
+   *
+   * @param root - base directory from where the search starts
+   * @param indexFile - file name including fingerprint
+   * @returns Array of paths containing base files to be optimized
+   */
+  public static findRecursivePrerenderedDirs(root: string, indexFile: string): string[] {
+    const appPrerenderedDirs = [];
+
+    const dirs = fs.readdirSync(root).filter((item) => fs.statSync(`${root}/${item}`).isDirectory());
+    if (dirs) {
+      for (const dir of dirs) {
+        if (FileUtil.containsIndexFile(`${root}/${dir}`, indexFile)) {
+          appPrerenderedDirs.push(`${root}/${dir}`);
+        }
+        const subDirs = FileUtil.findRecursivePrerenderedDirs(`${root}/${dir}`, indexFile);
+        if (subDirs) {
+          appPrerenderedDirs.push(...subDirs);
+        }
+      }
+    }
+
+    return appPrerenderedDirs;
+  }
+
   public static filterFonts(
     files: string[],
     include: string[] | undefined,
